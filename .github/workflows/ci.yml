@@ -5,7 +5,7 @@ on:
   push:
 
 jobs:
-  lint-all:
+  lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +20,7 @@ jobs:
     name: Static Code Analysis Tests
     runs-on: ubuntu-latest
     needs:
-      - lint-all
+      - lint
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -30,3 +30,19 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           bandit app.py
+
+  test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    needs:
+      - sast
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Run static code analysis
+        run: |
+          pip3 install -r requirements.txt
+          python -m pytest
+
